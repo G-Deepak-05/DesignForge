@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: designforge-api
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:designforge}
+    username: ${POSTGRES_USER:designforge}
+    password: ${POSTGRES_PASSWORD:designforge_dev_password}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+jwt:
+  secret: ${JWT_SECRET:replace-with-a-long-random-secret-min-32-bytes}
+  access-token-ttl-minutes: ${JWT_ACCESS_TOKEN_TTL_MINUTES:15}
+  refresh-token-ttl-days: ${JWT_REFRESH_TOKEN_TTL_DAYS:7}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
