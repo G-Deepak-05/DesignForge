@@ -55,4 +55,33 @@ class AuthControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Email already registered"));
     }
+
+    @Test
+    void login_withValidCredentials_returns200WithTokens() throws Exception {
+        LoginRequest request = new LoginRequest("jane@example.com", "password123");
+        AuthResponse response = new AuthResponse(
+                "access-token-value",
+                "refresh-token-value",
+                new UserResponse("11111111-1111-1111-1111-111111111111", "jane@example.com", "Jane", "en")
+        );
+        when(authService.login(any(LoginRequest.class))).thenReturn(response);
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").value("access-token-value"));
+    }
+
+    @Test
+    void login_withWrongPassword_returns401() throws Exception {
+        LoginRequest request = new LoginRequest("jane@example.com", "wrong-password");
+        when(authService.login(any(LoginRequest.class)))
+                .thenThrow(new ApiException(401, "Invalid email or password"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
+    }
 }

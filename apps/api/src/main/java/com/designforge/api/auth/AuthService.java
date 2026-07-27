@@ -9,10 +9,19 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final RefreshTokenStore refreshTokenStore;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService,
+            RefreshTokenStore refreshTokenStore
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.refreshTokenStore = refreshTokenStore;
     }
 
     public UserResponse register(RegisterRequest request) {
@@ -26,5 +35,17 @@ public class AuthService {
                 request.locale() == null ? "en" : request.locale()
         );
         return UserResponse.from(userRepository.save(user));
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new ApiException(401, "Invalid email or password"));
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new ApiException(401, "Invalid email or password");
+        }
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = java.util.UUID.randomUUID().toString();
+        refreshTokenStore.store(user.getId(), refreshToken);
+        return new AuthResponse(accessToken, refreshToken, UserResponse.from(user));
     }
 }
