@@ -13,10 +13,22 @@ Master Low-Level Design (LLD) & High-Level Design (HLD) Interviews.
 
 ## Local development
 
-1. Copy `.env.example` to `.env` and fill in real secrets.
+1. Copy `.env.example` to `.env` (repo root) and fill in real secrets. `JWT_SECRET` has no
+   default — the backend fails to start without it. Generate one with `openssl rand -base64 48`.
 2. `docker compose -f infra/docker-compose.yml up -d`
-3. Backend: `cd apps/api && ./mvnw spring-boot:run`
-4. Frontend: `cd apps/web && npm install && npm run dev`
+3. Backend: `cd apps/api && export $(grep -v '^#' ../../.env | xargs) && ./mvnw spring-boot:run`
+4. Frontend: `cd apps/web && cp .env.example .env.local && npm install && npm run dev`
+
+### Environment variables
+
+Backend variables live in the root `.env` (see `.env.example`); frontend variables live in
+`apps/web/.env.local` (see `apps/web/.env.example`), per Next.js convention.
+
+| Variable | Where | Default | Purpose |
+| --- | --- | --- | --- |
+| `JWT_SECRET` | root `.env` | none (required) | HMAC signing key for access tokens; must be at least 32 bytes. |
+| `CORS_ALLOWED_ORIGINS` | root `.env` | `http://localhost:3000` | Comma-separated browser origins allowed to call the API. |
+| `NEXT_PUBLIC_API_BASE_URL` | `apps/web/.env.local` | `http://localhost:8080` | Base URL the frontend uses to reach the backend. |
 
 ## Testing
 
