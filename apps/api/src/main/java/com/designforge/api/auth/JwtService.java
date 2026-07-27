@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -21,7 +22,7 @@ public class JwtService {
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token-ttl-minutes:15}") long accessTokenTtlMinutes
     ) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenTtlMinutes = accessTokenTtlMinutes;
     }
 
