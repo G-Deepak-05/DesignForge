@@ -23,4 +23,17 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> me(java.security.Principal principal) {
+        java.util.UUID userId = java.util.UUID.fromString(principal.getName());
+        return ResponseEntity.ok(authService.me(userId));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(java.security.Principal principal) {
+        java.util.UUID userId = java.util.UUID.fromString(principal.getName());
+        authService.logout(userId);
+        return ResponseEntity.noContent().build();
+    }
 }

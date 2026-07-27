@@ -48,4 +48,14 @@ public class AuthService {
         refreshTokenStore.store(user.getId(), refreshToken);
         return new AuthResponse(accessToken, refreshToken, UserResponse.from(user));
     }
+
+    public UserResponse me(java.util.UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(404, "User not found"));
+        return UserResponse.from(user);
+    }
+
+    public void logout(java.util.UUID userId) {
+        refreshTokenStore.revoke(userId);
+    }
 }
