@@ -17,3 +17,9 @@ Master Low-Level Design (LLD) & High-Level Design (HLD) Interviews.
 2. `docker compose -f infra/docker-compose.yml up -d`
 3. Backend: `cd apps/api && ./mvnw spring-boot:run`
 4. Frontend: `cd apps/web && npm install && npm run dev`
+
+## Testing
+
+- Backend unit tests: `cd apps/api && ./mvnw test`
+- Frontend unit tests: `cd apps/web && npm test`
+- End-to-end: bring up `infra/docker-compose.yml` and `apps/api`, then `cd apps/web && npm run test:e2e`
