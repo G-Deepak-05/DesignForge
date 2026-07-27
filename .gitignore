@@ -1,0 +1,21 @@
+.superpowers/
+
+# Node
+node_modules/
+.next/
+.turbo/
+
+# Java
+target/
+*.class
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
